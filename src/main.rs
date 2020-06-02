@@ -1,40 +1,71 @@
-use std::io::{self, Write};
-
 mod vec3;
+mod colour;
+mod ray;
 
-fn println(text: &str) {
-    print(&format!("{}\n", text));
-}
-
-fn print(text: &str) {
-    io::stdout().write_all(text.as_bytes()).expect("Failed writing to stdout!?");
-}
-
-fn print_stderr(text: &str) {
-    io::stderr().write_all(text.as_bytes()).expect("Failed writing to stderr!?");
-}
+use colour::*;
+use vec3::*;
+use ray::*;
 
 fn main() {
-    const IMAGE_HEIGHT: usize = 256;
-    const IMAGE_WIDTH: usize = 256;
+    const ASPECT_RATIO: f64 = 16.0/9.0;
+    const IMAGE_WIDTH: usize = 384;
+    const IMAGE_HEIGHT: usize = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as usize;
 
-    println("P3");
-    println(&format!("{} {}", IMAGE_HEIGHT, IMAGE_WIDTH));
-    println("255");
+    print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
+    
+    let viewport_height = 2.0;
+    let viewport_width = ASPECT_RATIO * viewport_height;
+    let focal_length = 1.0;
 
-    for i in 0..256 {
-        print_stderr(&format!("Scanlines remaining: {}\n", 256 - i));
-        for j in 0..256 {
-            let r = i as f64 / (IMAGE_WIDTH as f64 - 1.0);
-            let g = j as f64 / (IMAGE_HEIGHT as f64 - 1.0);
-            let b = 0.25 as f64;
+    let origin = Pos3::new(0.0, 0.0, 0.0);
+    let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
+    let vertical = Vec3::new(0.0, viewport_height, 0.0);
+    let lower_left_corner: Pos3 = origin - horizontal / 2.0 - vertical / 2.0 - Vec3::new(0.0, 0.0, focal_length);
+
+    for j in (0..IMAGE_HEIGHT).rev() {
+        eprintln!("Scanlines remaining: {}", j);
+        for i in 0..IMAGE_WIDTH {
+            let u = i as f64 / (IMAGE_WIDTH as f64 - 1.0);
+            let v = j as f64 / (IMAGE_HEIGHT as f64 - 1.0);
+            let ray = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical - origin);
             
-            let r = r * 255.999;
-            let g = g * 255.999;
-            let b = b * 255.999;
-
-            println(&format!("{} {} {}", r.floor() as i64, g.floor() as i64, b.floor() as i64));
+            let col = ray_colour(ray);
+            col.print();
         }
     }
-    print_stderr("Done!");
+
+    eprintln!("Done!");
+}
+
+fn ray_colour(ray: Ray) -> Colour {
+    if let Some(t) = hit_sphere(Pos3::new(0.0, 0.0, -1.0), 0.5, ray) {
+        if t > 0.0 {
+            let n = Vec3::normalize(&(ray.at(t) - Vec3::new(0.0, 0.0, -1.0)));
+            return 0.5 * Colour::new(
+                n.x + 1.0,
+                n.y + 1.0,
+                n.z + 1.0,
+            );
+        }
+    } 
+    let unit = Vec3::normalize(&ray.direction);
+    let t = 0.5 * (unit.y + 1.0);
+    Colour::col_lerp(Colour::WHITE, Colour::BLUE, t)
+}
+
+fn hit_sphere(centre: Pos3, radius: f64, ray: Ray) -> Option<f64> {
+    let oc = ray.origin - centre;
+    let a = ray.direction.length_squared();
+    let half_b = Vec3::dot(&oc, &ray.direction);
+    let c = oc.length_squared() - radius * radius;
+
+    let discriminant = half_b * half_b - a * c;
+
+    if discriminant < 0.0 {
+        None
+    } else {
+        Some( 
+            (-half_b - discriminant.sqrt()) / a
+        )
+    }
 }
