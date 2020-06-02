@@ -9,6 +9,10 @@ fn print(text: &str) {
     io::stdout().write_all(text.as_bytes()).expect("Failed writing to stdout!?");
 }
 
+fn print_stderr(text: &str) {
+    io::stderr().write_all(format!("{}\n", text).as_bytes()).expect("Failed writing to stderr!?");
+}
+
 fn main() {
     const IMAGE_HEIGHT: usize = 256;
     const IMAGE_WIDTH: usize = 256;
@@ -18,7 +22,7 @@ fn main() {
     println("255");
 
     for i in 0..256 {
-        io::stderr().write_fmt(format_args!("Scanlines remaining: {}\n", 256 - i)).expect("Failed writing to stderr!?");
+        print_stderr(&format!("Scanlines remaining: {}\n", 256 - i));
         for j in 0..256 {
             let r: f64 = i as f64 / (IMAGE_WIDTH as f64 - 1.0);
             let g = j as f64 / (IMAGE_HEIGHT as f64 - 1.0);
@@ -31,5 +35,5 @@ fn main() {
             println(&format!("{} {} {}", r.floor() as i64, g.floor() as i64, b.floor() as i64));
         }
     }
-
+    print_stderr("Done!");
 }
