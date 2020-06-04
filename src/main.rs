@@ -20,7 +20,7 @@ fn main() {
     const ASPECT_RATIO: f64 = 16.0/9.0;
     const IMAGE_WIDTH: usize = 384;
     const IMAGE_HEIGHT: usize = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as usize;
-    const SAMPLES_PER_PIXEL: usize = 20;
+    const SAMPLES_PER_PIXEL: usize = 100;
     const MAX_BOUNCES: usize = 50;
 
     print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -114,12 +114,20 @@ fn main() {
     //     )
     // );
 
+    let look_from = Pos3::new(3.0, 3.0, 2.0);
+    let look_at = Pos3::new(0.0, 0.0, -1.0);
+    let vup = Pos3::new(0.0, 1.0, 0.0);
+    let dist_to_focus = (look_from - look_at).length();
+    let aperture = 1.0;
+
     let camera = camera::new(
-        Pos3::new(-2.0, 2.0, 1.0), 
-        Pos3::new(0.0, 0.0, -1.0), 
-        Pos3::new(0.0, 1.0, 0.0), 
+        look_from,
+        look_at, 
+        vup, 
         20.0, 
-        ASPECT_RATIO
+        ASPECT_RATIO,
+        aperture,
+        dist_to_focus,
     );
 
     for j in (0..IMAGE_HEIGHT).rev() {

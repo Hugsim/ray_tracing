@@ -97,6 +97,15 @@ pub fn random_vec_in_unit_sphere() -> Vec3 {
     }
 }
 
+pub fn random_vec_in_unit_disk() -> Vec3 {
+    loop {
+        let v = Vec3::new(random_zero_one(), random_zero_one(), 0.0);
+        if v.length_squared() < 1.0 {
+            return v;
+        }
+    }
+}
+
 pub fn random_vec_in_hemisphere(normal: &Vec3) -> Vec3 {
     let vec = random_vec_in_unit_sphere();
     if Vec3::dot(normal, &vec) > 0.0 {
