@@ -26,6 +26,37 @@ fn main() {
     print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
 
     let mut objects: Objects = vec![];
+
+    /*
+            Two touching spheres
+    */
+    // let r = (PI / 4.0).cos();
+    // objects.push(
+    //     Box::new(
+    //         Sphere {
+    //             centre: Pos3::new(-r, 0.0, -1.0), 
+    //             radius: r,
+    //             material: Material::Lambertian {
+    //                 albedo: Colour::new(0.0, 0.0, 1.0),
+    //             },
+    //         }
+    //     )
+    // );
+    // objects.push(
+    //     Box::new(
+    //         Sphere {
+    //             centre: Pos3::new(r, 0.0, -1.0), 
+    //             radius: r,
+    //             material: Material::Lambertian {
+    //                 albedo: Colour::new(1.0, 0.0, 0.0),
+    //             },
+    //         }
+    //     )
+    // );
+
+    /*
+            Scene with three spheres, one metallic, one matte and one hollow glass
+    */
     objects.push(
         Box::new(
             Sphere {
@@ -71,24 +102,30 @@ fn main() {
             }
         )
     );
-    objects.push(
-        Box::new(
-            Sphere {
-                centre: Pos3::new(-1.0, 0.0, -1.0), 
-                radius: -0.45,
-                material: Material::Dielectric {
-                    refractive_index: 1.5,
-                },
-            }
-        )
-    );
+    // objects.push(
+    //     Box::new(
+    //         Sphere {
+    //             centre: Pos3::new(-1.0, 0.0, -1.0), 
+    //             radius: -0.45,
+    //             material: Material::Dielectric {
+    //                 refractive_index: 1.5,
+    //             },
+    //         }
+    //     )
+    // );
 
-    let camera = camera::new();
+    let camera = camera::new(
+        Pos3::new(-2.0, 2.0, 1.0), 
+        Pos3::new(0.0, 0.0, -1.0), 
+        Pos3::new(0.0, 1.0, 0.0), 
+        20.0, 
+        ASPECT_RATIO
+    );
 
     for j in (0..IMAGE_HEIGHT).rev() {
         eprintln!("Scanlines remaining: {}", j);
         for i in 0..IMAGE_WIDTH {
-            let mut col = Colour::new(0.0, 0.0, 0.0);
+            let mut col = Colour::from(0.0);
             for _ in 0..SAMPLES_PER_PIXEL {            
                 let u = (i as f64 + random_zero_one()) / (IMAGE_WIDTH as f64 - 1.0);
                 let v = (j as f64 + random_zero_one()) / (IMAGE_HEIGHT as f64 - 1.0);
@@ -124,7 +161,7 @@ fn ray_colour(world: &Objects, ray: &Ray, depth: usize) -> Colour {
         if let Some((new_ray, attenuation)) = hr.material.scatter(ray, &hr) {
             return attenuation * ray_colour(world, &new_ray, depth - 1);
         } else {
-            return Colour::new(0.0, 0.0, 0.0);
+            return Colour::from(0.0);
         }
     } 
 

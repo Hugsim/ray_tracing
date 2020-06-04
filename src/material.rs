@@ -74,7 +74,7 @@ impl Material {
                     Ray::new(hr.p, Vec3::normalize(&ray.direction).reflect(normal))
                 };
 
-                Some((ray, Colour::new(1.0, 1.0, 1.0)))
+                Some((ray, Colour::from(1.0)))
             },
         }
     }

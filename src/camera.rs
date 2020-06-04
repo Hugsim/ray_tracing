@@ -1,5 +1,6 @@
 use crate::vec3::*;
 use crate::ray::*;
+use crate::utility::*;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Camera {
@@ -10,25 +11,34 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn get_ray(&self, u: f64, v: f64) -> Ray {
-        let origin = self.origin;
-        let direction = self.lower_left_corner + u * self.horizontal + v * self.vertical;
-        Ray::new(origin, direction)
+    pub fn get_ray(&self, s: f64, t: f64) -> Ray {
+        let direction = self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin;
+        Ray::new(self.origin, direction)
     }
 }
 
-pub fn new() -> Camera {
-    let aspect_ratio = 16.0 / 9.0;
-    let viewport_height = 2.0;
+pub fn new(look_from: Pos3, look_at: Pos3, vup: Vec3, vert_fov_deg: f64, aspect_ratio: f64) -> Camera {
+    let theta = deg_to_rad(vert_fov_deg);
+    let h = (theta / 2.0).tan();
+    let viewport_height = 2.0 * h;
     let viewport_width = aspect_ratio * viewport_height;
     let focal_length = 1.0;
 
-    let origin = Pos3::new(0.0, 0.0, 0.0);
-    let horizontal = Pos3::new(viewport_width, 0.0, 0.0);
-    let vertical = Pos3::new(0.0, viewport_height, 0.0);
-    let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - Pos3::new(0.0, 0.0, focal_length);
+    let w = Vec3::normalize(&(look_from - look_at));
+    let u = Vec3::normalize(
+        &Vec3::cross(&vup, &w)
+    );
+    let v = Vec3::cross(&w, &u);
 
+    let origin = look_from;
+    let horizontal = viewport_width * u;
+    let vertical = viewport_height * v;
+    let lower_left_corner = origin - horizontal / 2.0 - vertical / 2.0 - w;
+    
     Camera {
-        origin, horizontal, vertical, lower_left_corner,
+        origin, 
+        horizontal, 
+        vertical, 
+        lower_left_corner,
     }
 }

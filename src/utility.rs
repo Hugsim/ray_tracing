@@ -4,7 +4,7 @@ pub const PI: f64 = std::f64::consts::PI;
 pub const INF: f64 = std::f64::INFINITY;
 
 pub fn deg_to_rad(deg: f64) -> f64 {
-    deg * PI / 180.0
+    (deg  / 360.0) * 2.0 * PI
 }
 
 pub fn clamp(min: f64, max: f64, x: f64) -> f64 {

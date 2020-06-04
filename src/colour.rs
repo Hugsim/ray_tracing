@@ -32,6 +32,14 @@ impl Colour {
         println!("{}", col.as_string());
     }
 
+    pub fn from(v: f64) -> Colour {
+        Colour { 
+            r: v,
+            g: v,
+            b: v,
+        }
+    }
+
     pub fn new(r: f64, g: f64, b: f64) -> Colour {
         Colour {r, g, b}
     }

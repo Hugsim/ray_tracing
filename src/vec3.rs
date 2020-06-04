@@ -40,6 +40,14 @@ impl Vec3 {
         *v / v.length()
     }
 
+    pub fn from(v: f64) -> Vec3 {
+        Vec3 { 
+            x: v,
+            y: v,
+            z: v,
+        }
+    }
+
     pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
         Vec3 { x, y, z }
     }
