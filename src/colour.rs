@@ -1,4 +1,5 @@
 use std::ops::{Add, AddAssign, Mul, MulAssign};
+use crate::utility::clamp;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Colour {
@@ -8,16 +9,27 @@ pub struct Colour {
 }
 
 impl Colour {
-    pub fn as_string(self) -> String {
-        let r = (self.r * 255.999).floor() as i64;
-        let g = (self.g * 255.999).floor() as i64;
-        let b = (self.b * 255.999).floor() as i64;
-
-        format!("{} {} {}", r, g, b)
+    pub fn as_string(&self) -> String {
+        format!("{} {} {}", self.r, self.g, self.b)
     }
 
-    pub fn print(self) {
-        println!("{}", self.as_string());
+    pub fn map(self, mut f: impl FnMut(f64) -> f64) -> Colour {
+        Colour {
+            r: f(self.r),
+            g: f(self.g),
+            b: f(self.b),
+        }
+    }
+
+    pub fn print(&self, samples_per_pixel: usize) {
+        let val = 1.0 / samples_per_pixel as f64;
+        let col = self.map(|c| (c * val).sqrt());
+        let col = col.map(|c| 
+            (256.0 * clamp(0.0, 0.999, c)).floor()
+        );
+        assert!(!col.r.is_nan());
+    
+        println!("{}", col.as_string());
     }
 
     pub fn new(r: f64, g: f64, b: f64) -> Colour {
@@ -105,6 +117,18 @@ impl Mul<f64> for Colour {
             r: self.r * rhs,
             g: self.g * rhs,
             b: self.b * rhs,
+        }
+    }
+}
+
+impl Mul for Colour {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self {
+        Self {
+            r: self.r * rhs.r,
+            g: self.g * rhs.g,
+            b: self.b * rhs.b,
         }
     }
 }
