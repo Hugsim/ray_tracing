@@ -17,7 +17,7 @@ pub struct HitRecord<'m> {
     pub material: &'m Material,
 }
 
-pub trait Hit {
+pub trait Hit: std::fmt::Debug + Sync + Send {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 

@@ -1,5 +1,6 @@
-use std::ops::{Add, AddAssign, Mul, MulAssign};
-use crate::utility::clamp;
+use std::ops::{Add, AddAssign, Mul, MulAssign, Div};
+use std::iter::Sum;
+use crate::utility::*;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Colour {
@@ -21,14 +22,11 @@ impl Colour {
         }
     }
 
-    pub fn print(&self, samples_per_pixel: usize) {
-        let val = 1.0 / samples_per_pixel as f64;
-        let col = self.map(|c| (c * val).sqrt());
+    pub fn print(&self) {
+        let col = self.map(|c| c.sqrt());
         let col = col.map(|c| 
             (256.0 * clamp(0.0, 0.999, c)).floor()
         );
-        assert!(!col.r.is_nan());
-    
         println!("{}", col.as_string());
     }
 
@@ -99,6 +97,10 @@ impl Colour {
     };
 }
 
+pub fn rand_colour() -> Colour {    
+    Colour::new(random_zero_one(), random_zero_one(), random_zero_one())
+}
+
 impl Add for Colour {
     type Output = Self;
 
@@ -117,15 +119,20 @@ impl AddAssign for Colour {
     }
 }
 
+impl Sum for Colour {
+    fn sum<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = Self>,
+    {
+        iter.fold(Colour::from(0.0), std::ops::Add::add)
+    }
+}
+
 impl Mul<f64> for Colour {
     type Output = Self;
 
     fn mul(self, rhs: f64) -> Self {
-        Self {
-            r: self.r * rhs,
-            g: self.g * rhs,
-            b: self.b * rhs,
-        }
+        self.map(|c| c * rhs)
     }
 }
 
@@ -152,5 +159,13 @@ impl Mul<Colour> for f64 {
 impl MulAssign<f64> for Colour {
     fn mul_assign(&mut self, rhs: f64) {
         *self = *self * rhs;
+    }
+}
+
+impl Div<f64> for Colour {
+    type Output = Self;
+
+    fn div(self, rhs: f64) -> Self {
+        self.map(|c| c / rhs)
     }
 }
