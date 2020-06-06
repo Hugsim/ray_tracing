@@ -9,6 +9,7 @@ mod image;
 mod scenes;
 mod consts;
 mod aabb;
+mod bvh;
 
 use colour::*;
 use vec3::*;
@@ -21,6 +22,7 @@ use crate::image::*;
 use scenes::*;
 use consts::*;
 use aabb::*;
+use bvh::*;
 
 use ::image as ext_image;
 use std::path::Path;
@@ -44,7 +46,7 @@ fn main() {
         1.0,
     );
 
-    let objects = final_scene_1();
+    let objects = final_scene_1(0.0, 1.0);
 
     let buffer = Image::new(IMAGE_WIDTH, IMAGE_HEIGHT, |x, y| {
         let col: Colour = (0..SAMPLES_PER_PIXEL)
@@ -72,25 +74,11 @@ fn main() {
     eprintln!("Done!");
 }
 
-fn hits_any<'w>(world: &'w Objects, t_min: f64, t_max: f64, ray: &Ray) -> Option<HitRecord<'w>> {
-    let mut to_return: Option<HitRecord> = None;
-    let mut closest_t = t_max;
-
-    for obj in world {
-        if let Some(hr) = obj.hit(ray, t_min, closest_t) {
-            to_return = Some(hr);
-            closest_t = hr.t;
-        }
-    }
-
-    to_return
-}
-
 fn ray_colour(world: &Objects, ray: &Ray, depth: usize) -> Colour {
     if depth == 0 {
         return Colour::BLUE;
     }
-    if let Some(hr) = hits_any(world, 0.001, INF, &ray) {
+    if let Some(hr) = world.hit(&ray, 0.001, INF) {
         if let Some((new_ray, attenuation)) = hr.material.scatter(ray, &hr) {
             return attenuation * ray_colour(world, &new_ray, depth - 1);
         } else {

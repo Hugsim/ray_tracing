@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Neg, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
+use std::ops::{Add, AddAssign, Neg, Sub, SubAssign, Mul, MulAssign, Div, DivAssign, Index};
 use rand::{thread_rng, Rng};
 use crate::utility::*;
 
@@ -40,14 +40,6 @@ impl Vec3 {
         *v / v.length()
     }
 
-    pub fn from(v: f64) -> Vec3 {
-        Vec3 { 
-            x: v,
-            y: v,
-            z: v,
-        }
-    }
-
     pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
         Vec3 { x, y, z }
     }
@@ -66,6 +58,29 @@ impl Vec3 {
             Some(eta_over_etap * (uv - dt * normal) - disc.sqrt() * normal)
         } else {
             None
+        }
+    }
+}
+
+impl From<f64> for Vec3 {
+    fn from(v: f64) -> Self {
+        Vec3 { 
+            x: v,
+            y: v,
+            z: v,
+        }
+    }
+}
+
+impl Index<usize> for Vec3 {
+    type Output = f64;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            _ => panic!("Indexing into Vec3 out of bounds.")
         }
     }
 }

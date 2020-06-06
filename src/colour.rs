@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Mul, MulAssign, Div};
+use std::ops::{Add, AddAssign, Mul, MulAssign, Div, Index};
 use std::iter::Sum;
 use crate::utility::*;
 
@@ -28,14 +28,6 @@ impl Colour {
             (256.0 * clamp(0.0, 0.999, c)).floor()
         );
         println!("{}", col.as_string());
-    }
-
-    pub fn from(v: f64) -> Colour {
-        Colour { 
-            r: v,
-            g: v,
-            b: v,
-        }
     }
 
     pub fn new(r: f64, g: f64, b: f64) -> Colour {
@@ -99,6 +91,29 @@ impl Colour {
 
 pub fn rand_colour() -> Colour {    
     Colour::new(random_zero_one(), random_zero_one(), random_zero_one())
+}
+
+impl From<f64> for Colour {
+    fn from(v: f64) -> Self {
+        Colour { 
+            r: v,
+            g: v,
+            b: v,
+        }
+    }
+}
+
+impl Index<usize> for Colour {
+    type Output = f64;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.r,
+            1 => &self.g,
+            2 => &self.b,
+            _ => panic!("Indexing into Colour out of bounds.")
+        }
+    }
 }
 
 impl Add for Colour {
