@@ -1,4 +1,4 @@
-use rand::prelude as rng;
+use rand::prelude::*;
 
 pub const PI: f64 = std::f64::consts::PI;
 pub const INF: f64 = std::f64::INFINITY;
@@ -22,7 +22,11 @@ pub fn clamp(min: f64, max: f64, x: f64) -> f64 {
 }
 
 pub fn random_zero_one() -> f64 {
-    rng::random()
+    random()
+}
+
+pub fn random_in_range(start: f64, end: f64) -> f64 {
+    thread_rng().gen_range(start, end)
 }
 
 pub fn min(a: f64, b: f64) -> f64 {

@@ -12,6 +12,8 @@ pub struct Camera {
     v: Vec3,
     w: Vec3,
     lens_radius: f64,
+    time_start: f64,
+    time_end: f64,
 }
 
 impl Camera {
@@ -20,10 +22,12 @@ impl Camera {
         let offset = self.u * rand.x + self.v * rand.y;
 
         let direction = self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin - offset;
+        let time = random_in_range(self.time_start, self.time_end);
 
         Ray::new(
             self.origin + offset, 
-            direction
+            direction,
+            time,
         )
     }
 }
@@ -36,12 +40,13 @@ pub fn new(
         aspect_ratio: f64,
         aperture: f64,
         focus_dist: f64,
+        time_start: f64,
+        time_end: f64,
 ) -> Camera {
     let theta = deg_to_rad(vert_fov_deg);
     let h = (theta / 2.0).tan();
     let viewport_height = 2.0 * h;
     let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;
 
     let w = Vec3::normalize(&(look_from - look_at));
     let u = Vec3::normalize(
@@ -64,5 +69,7 @@ pub fn new(
         v,
         w,
         lens_radius,
+        time_start,
+        time_end,
     }
 }

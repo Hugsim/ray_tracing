@@ -93,3 +93,31 @@ impl Hit for Sphere {
         None
     }
 }
+
+#[derive(Debug)]
+pub struct LinearMove<O> {
+    pub obj: O,
+    pub vel: Vec3,
+}
+
+impl<O> LinearMove<O> {
+    pub fn new(vel: Vec3, obj: O) -> LinearMove<O> {
+        LinearMove {
+            vel,
+            obj,
+        }
+    }
+}
+
+impl<O: Hit> Hit for LinearMove<O> {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        self.obj.hit(
+            &Ray {
+                origin: ray.origin - self.vel * ray.time,
+                ..*ray
+            }, 
+            t_min, 
+            t_max,
+        )
+    }
+}
