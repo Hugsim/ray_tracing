@@ -10,6 +10,7 @@ mod scenes;
 mod consts;
 mod aabb;
 mod bvh;
+mod texture;
 
 use colour::*;
 use vec3::*;
@@ -23,6 +24,7 @@ use scenes::*;
 use consts::*;
 use aabb::*;
 use bvh::*;
+use texture::*;
 
 use ::image as ext_image;
 use std::path::Path;
@@ -46,7 +48,11 @@ fn main() {
         1.0,
     );
 
-    let objects = final_scene_1(0.0, 1.0);
+    eprintln!("Starting to build BVH.");
+
+    let objects = test_bvh(0.0, 1.0);
+
+    eprintln!("Finished building BVH.");
 
     let buffer = Image::new(IMAGE_WIDTH, IMAGE_HEIGHT, |x, y| {
         let col: Colour = (0..SAMPLES_PER_PIXEL)

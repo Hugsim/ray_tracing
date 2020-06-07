@@ -12,6 +12,31 @@ pub struct Vec3 {
 pub type Pos3 = Vec3;
 
 impl Vec3 {
+    pub fn map(self, mut f: impl FnMut(f64) -> f64) -> Vec3 {
+        Vec3 {
+            x: f(self.x),
+            y: f(self.y),
+            z: f(self.z),
+        }
+    }
+
+    pub fn zip_with3(
+        self,
+        other1: Vec3,
+        other2: Vec3,
+        mut f: impl FnMut(f64, f64, f64) -> f64,
+    ) -> Self {
+        Vec3::new(
+            f(self.x, other1.x, other2.x),
+            f(self.y, other1.y, other2.y),
+            f(self.z, other1.z, other2.z),
+        )
+    }
+
+    pub fn reduce(self, f: impl Fn(f64, f64) -> f64) -> f64 {
+        f(f(self.x, self.y), self.z)
+    }
+
     pub fn length_squared(self) -> f64 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
@@ -171,6 +196,18 @@ impl Sub for Vec3 {
 impl SubAssign for Vec3 {
     fn sub_assign(&mut self, other: Self) {
         *self = *self - other;
+    }
+}
+
+impl Mul for Vec3 {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self {
+        Self {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+            z: self.z * rhs.z,
+        }
     }
 }
 

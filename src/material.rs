@@ -3,11 +3,12 @@ use crate::colour::*;
 use crate::hit::*;
 use crate::vec3::*;
 use crate::utility::*;
+use crate::texture::*;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Clone)]
 pub enum Material {
     Lambertian {
-        albedo: Colour,
+        albedo: Texture,
     },
     Metal {
         albedo: Colour,
@@ -24,17 +25,16 @@ impl Material {
             Material::Lambertian { albedo } => {
                 let scatter_direction = hr.normal + random_unit_vec();
                 let scattered = Ray::new(hr.p, scatter_direction, ray.time);
-                let attenuation = albedo;
+                let attenuation = albedo(hr.u, hr.v, hr.p);
 
-                Some((scattered, *attenuation))
+                Some((scattered, attenuation))
             },
 
             Material::Metal { albedo, fuzziness } => {
                 let reflected = ray.direction.reflect(hr.normal);
                 let scattered = Ray::new(hr.p, reflected + *fuzziness * random_vec_in_unit_sphere(), ray.time);
-                let attenuation = albedo;
 
-                Some((scattered, *attenuation))
+                Some((scattered, *albedo))
             },
 
             Material::Dielectric { refractive_index } => {

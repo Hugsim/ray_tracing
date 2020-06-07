@@ -3,6 +3,7 @@ use crate::ray::*;
 use crate::material::*;
 use crate::aabb::*;
 use crate::scenes::*;
+use crate::utility::*;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Side {
@@ -10,21 +11,23 @@ pub enum Side {
     Inside,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, Copy)]
 pub struct HitRecord<'m> {
     pub p: Pos3,
     pub normal: Vec3,
     pub t: f64,
+    pub u: f64,
+    pub v: f64,
     pub side: Side,
     pub material: &'m Material,
 }
 
-pub trait Hit: std::fmt::Debug + Sync + Send {
+pub trait Hit: Sync + Send {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
     fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb>;
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone)]
 pub struct Sphere {
     pub centre: Pos3,
     pub radius: f64,
@@ -34,6 +37,16 @@ pub struct Sphere {
 impl Sphere {
     pub fn new(centre: Pos3, radius: f64, material: Material) -> Sphere {
         Sphere { centre, radius, material }
+    }
+
+    pub fn uv(p: Pos3) -> (f64, f64) {
+        let phi = p.z.atan2(p.x);
+        let theta = p.y.asin();
+
+        let u = 1.0 - (phi + PI)  / (2.0 * PI);
+        let v = (theta + PI / 2.0) / PI;
+
+        (u, v)
     }
 }
 
@@ -60,9 +73,13 @@ impl Hit for Sphere {
                     };
                 let material = &self.material;
 
+                let (u, v) = Sphere::uv(p - self.centre / self.radius);
+
                 return Some(
                     HitRecord {
                         t, 
+                        u,
+                        v,
                         p,
                         normal,
                         side,
@@ -82,9 +99,13 @@ impl Hit for Sphere {
                     };
                 let material = &self.material;
 
+                let (u, v) = Sphere::uv(p - self.centre / self.radius);
+
                 return Some(
                     HitRecord {
                         t, 
+                        u,
+                        v,
                         p,
                         normal,
                         side,
@@ -100,7 +121,7 @@ impl Hit for Sphere {
         Some(
             Aabb::new(
                 self.centre - Vec3::from(self.radius),
-                self.centre - Vec3::from(self.radius)
+                self.centre + Vec3::from(self.radius)
             )
         )
     }

@@ -2,7 +2,7 @@ use std::ops::{Add, AddAssign, Mul, MulAssign, Div, Index};
 use std::iter::Sum;
 use crate::utility::*;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct Colour {
     pub r: f64,
     pub g: f64,

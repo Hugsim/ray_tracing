@@ -3,7 +3,6 @@ use crate::hit::*;
 use crate::ray::*;
 use crate::scenes::*;
 
-#[derive(Debug)]
 pub enum BvhContents {
     Leaf(Box<dyn Hit>),
     Node {
@@ -12,10 +11,9 @@ pub enum BvhContents {
     }
 }
 
-#[derive(Debug)]
 pub struct Bvh {
-    bb: Option<Aabb>,
     size: usize,
+    bb: Aabb,
     contents: BvhContents
 }
 
@@ -66,7 +64,7 @@ impl Bvh {
         match world.len() {
             0 => panic!("Can't create a BVH-object from an empty world."),
             1 => Bvh {
-                bb: world[0].bounding_box(t_min, t_max),
+                bb: world[0].bounding_box(t_min, t_max).expect("Can't create a BVH-object from objects without a bounding-box"),
                 contents: BvhContents::Leaf(world.pop().unwrap()),
                 size: 1,
             },
@@ -80,7 +78,7 @@ impl Bvh {
                 );
                 let left = Box::new(
                     Bvh::new(
-                        world,
+                        world.drain(..).collect(),
                         t_min,
                         t_max
                     )
@@ -88,7 +86,7 @@ impl Bvh {
 
                 Bvh {
                     size: left.size + right.size,
-                    bb: Aabb::surround(left.bounding_box(t_min, t_max), right.bounding_box(t_min, t_max)),
+                    bb: Aabb::surround(left.bounding_box(t_min, t_max), right.bounding_box(t_min, t_max)).expect("Can't create a BVH-object from objects without a bounding-box"),
                     contents: BvhContents::Node {
                         left,
                         right
@@ -101,37 +99,38 @@ impl Bvh {
 
 impl Hit for Bvh {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        if self.bb.is_none() || !self.bb.unwrap().hit(ray, t_min, t_max) {
-            return None;   
-        }
-        match &self.contents {
-            BvhContents::Leaf(obj) => {
-                obj.hit(ray, t_min, t_max)
-            },
-            BvhContents::Node { left, right } => {
-                let mut new_max = t_max;
-                let left_hit = left.hit(ray, t_min, t_max);
-                if let Some(hit) = left_hit {
-                    new_max = hit.t;
-                }
-
-                let right_hit = right.hit(ray, t_min, new_max);
-
-                match (left_hit, right_hit) {
-                    (h, None) | (None, h) => h,
-                    (Some(left), Some(right)) => {
-                        if left.t < right.t  {
-                            Some(left)
-                        } else {
-                            Some(right)
+        if self.bb.hit(ray, t_min, t_max) {
+            match &self.contents {
+                BvhContents::Leaf(obj) => {
+                    obj.hit(ray, t_min, t_max)
+                },
+                BvhContents::Node { left, right } => {
+                    let mut new_max = t_max;
+                    let left_hit = left.hit(ray, t_min, t_max);
+                    if let Some(hit) = left_hit {
+                        new_max = hit.t;
+                    }
+    
+                    let right_hit = right.hit(ray, t_min, new_max);
+    
+                    match (left_hit, right_hit) {
+                        (h, None) | (None, h) => h,
+                        (Some(left), Some(right)) => {
+                            if left.t < right.t  {
+                                Some(left)
+                            } else {
+                                Some(right)
+                            }
                         }
                     }
                 }
             }
+        } else {
+            None
         }
     }
 
     fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
-        self.bb
+        Some(self.bb)
     }
 }
