@@ -5,8 +5,34 @@ use crate::colour::*;
 use crate::utility::*;
 use crate::bvh::*;
 use crate::texture::*;
+use crate::perlin::*;
 
 pub type Objects = Vec<Box<dyn Hit>>;
+
+pub fn perlin_test(t_min: f64, t_max: f64) -> Objects {
+    let perlin = noise(Perlin::new());
+
+    vec![
+        Box::new(
+            Sphere {
+                centre: Pos3::new(0.0, -1000.0, 0.0),
+                material: Material::Lambertian {
+                    albedo: perlin.clone(),
+                },
+                radius: 1000.0,
+            }
+        ),
+        Box::new(
+            Sphere {
+                centre: Pos3::new(0.0, 2.0, 0.0),
+                material: Material::Lambertian {
+                    albedo: perlin.clone(),
+                },
+                radius: 2.0,
+            }
+        ),
+    ]
+}
 
 pub fn final_scene_1(t_min: f64, t_max: f64) -> Objects {
     let mut objects: Objects = vec![];

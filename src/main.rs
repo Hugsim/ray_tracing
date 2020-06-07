@@ -11,6 +11,7 @@ mod consts;
 mod aabb;
 mod bvh;
 mod texture;
+mod perlin;
 
 use colour::*;
 use vec3::*;
@@ -25,6 +26,7 @@ use consts::*;
 use aabb::*;
 use bvh::*;
 use texture::*;
+use perlin::*;
 
 use ::image as ext_image;
 use std::path::Path;
@@ -34,7 +36,7 @@ fn main() {
     let look_at = Pos3::new(0.0, 0.0, 0.0);
     let vup = Pos3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
-    let aperture = 0.1;
+    let aperture = 0.0;
 
     let camera = camera::new(
         look_from,
@@ -50,7 +52,7 @@ fn main() {
 
     eprintln!("Starting to build BVH.");
 
-    let objects = test_bvh(0.0, 1.0);
+    let objects = perlin_test(0.0, 1.0);
 
     eprintln!("Finished building BVH.");
 

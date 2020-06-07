@@ -1,5 +1,6 @@
 use crate::colour::*;
 use crate::vec3::*;
+use crate::perlin::*;
 
 use std::sync::Arc;
 
@@ -21,6 +22,14 @@ pub fn checkered(t1: Texture, t2: Texture) -> Texture {
             } else {
                 t2(u, v, p)
             }
+        }
+    )
+}
+
+pub fn noise(noise: Perlin) -> Texture {
+    Arc::new(
+        move |_, _, p| {
+            Colour::from(1.0) * noise.noise(p)
         }
     )
 }
