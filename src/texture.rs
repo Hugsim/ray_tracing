@@ -15,7 +15,7 @@ pub fn solid_colour(col: Colour) -> Texture {
 pub fn checkered(t1: Texture, t2: Texture) -> Texture {
     Arc::new(
         move |u, v, p| {
-            let val = (10.0 * p).map(f64::sin).reduce(std::ops::Mul::mul);
+            let val = (10.0 * p).map(f64::sin).fold(std::ops::Mul::mul);
 
             if val < 0.0 {
                 t1(u, v, p)

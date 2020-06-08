@@ -42,9 +42,13 @@ impl Sphere {
     pub fn uv(p: Pos3) -> (f64, f64) {
         let phi = p.z.atan2(p.x);
         let theta = p.y.asin();
+        assert!(!phi.is_nan());
+        assert!(!theta.is_nan());
 
         let u = 1.0 - (phi + PI)  / (2.0 * PI);
         let v = (theta + PI / 2.0) / PI;
+
+        assert!(!u.is_nan() && !v.is_nan());
 
         (u, v)
     }
@@ -62,9 +66,11 @@ impl Hit for Sphere {
         if discriminant > 0.0 {
             let root = discriminant.sqrt();
             let t = (-half_b - root) / a;
+            assert!(!t.is_nan());
             if (t_min < t) && (t < t_max) {
                 let p = ray.at(t);
-                let normal = (p - self.centre) / self.radius;
+                let normal = Vec3::normalize(&(p - self.centre));
+                assert!(!normal.is_nan());
                 let (normal, side) = 
                     if Vec3::dot(&ray.direction, &normal) > 0.0 {
                         (-normal, Side::Inside) // front_face = false
@@ -73,7 +79,7 @@ impl Hit for Sphere {
                     };
                 let material = &self.material;
 
-                let (u, v) = Sphere::uv(p - self.centre / self.radius);
+                let (u, v) = Sphere::uv(Vec3::normalize(&(p - self.centre)));
 
                 return Some(
                     HitRecord {
@@ -88,9 +94,10 @@ impl Hit for Sphere {
                 );
             } 
             let t = (-half_b + root) / a;
+            assert!(!t.is_nan());
             if (t_min < t) && (t < t_max) {
                 let p = ray.at(t);
-                let normal = (p - self.centre) / self.radius;
+                let normal = Vec3::normalize(&(p - self.centre));
                 let side = 
                     if Vec3::dot(&ray.direction, &normal) < 0.0 {
                         Side::Outside
@@ -99,7 +106,7 @@ impl Hit for Sphere {
                     };
                 let material = &self.material;
 
-                let (u, v) = Sphere::uv(p - self.centre / self.radius);
+                let (u, v) = Sphere::uv(Vec3::normalize(&(p - self.centre)));
 
                 return Some(
                     HitRecord {

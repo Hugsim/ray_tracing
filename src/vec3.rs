@@ -33,7 +33,7 @@ impl Vec3 {
         )
     }
 
-    pub fn reduce(self, f: impl Fn(f64, f64) -> f64) -> f64 {
+    pub fn fold(self, f: impl Fn(f64, f64) -> f64) -> f64 {
         f(f(self.x, self.y), self.z)
     }
 
@@ -49,6 +49,10 @@ impl Vec3 {
         format!("{} {} {}", self.x, self.y, self.z)
     }
 
+    pub fn is_nan(&self) -> bool {
+        self.x.is_nan() || self.y.is_nan() || self.z.is_nan()
+    }
+
     pub fn dot(u: &Vec3, v: &Vec3) -> f64 {
         u.x * v.x + u.y * v.y + u.z * v.z
     }
@@ -62,7 +66,9 @@ impl Vec3 {
     }
 
     pub fn normalize(v: &Vec3) -> Vec3 {
-        *v / v.length()
+        let v = *v / v.length();
+        assert!(!v.is_nan());
+        v
     }
 
     pub fn new(x: f64, y: f64, z: f64) -> Vec3 {

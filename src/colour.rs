@@ -11,7 +11,13 @@ pub struct Colour {
 
 impl Colour {
     pub fn as_string(&self) -> String {
-        format!("{} {} {}", self.r, self.g, self.b)
+        if self.r.is_nan() || self.g.is_nan() || self.b.is_nan() {
+            eprintln!("Got a NaN when printing colour, replacing with magenta.");
+            assert!(!self.is_nan());
+            format!("{} {} {}", 255, 0, 255)
+        } else {
+            format!("{} {} {}", self.r, self.g, self.b)
+        }
     }
 
     pub fn map(self, mut f: impl FnMut(f64) -> f64) -> Colour {
@@ -20,6 +26,22 @@ impl Colour {
             g: f(self.g),
             b: f(self.b),
         }
+    }
+
+    pub fn is_nan(&self) -> bool {
+        self.any(f64::is_nan)
+    }
+
+    pub fn any_negative(&self) -> bool {
+        self.any(|c| c < 0.0)
+    }
+
+    pub fn all_positive_or_zero(&self) -> bool {
+        !self.any_negative()
+    }
+
+    pub fn any(&self, mut f: impl FnMut(f64) -> bool) -> bool {
+        f(self.r) || f(self.g) || f(self.b)
     }
 
     pub fn print(&self) {

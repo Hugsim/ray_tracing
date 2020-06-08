@@ -62,7 +62,10 @@ fn main() {
                 let u = (x as f64 + random_zero_one()) / (IMAGE_WIDTH as f64 - 1.0);
                 let v = (y as f64 + random_zero_one()) / (IMAGE_HEIGHT as f64 - 1.0);
                 let ray = camera.get_ray(u, v);
-                ray_colour(&objects, &ray, MAX_BOUNCES)
+                assert!(!ray.direction.is_nan());
+                let col = ray_colour(&objects, &ray, MAX_BOUNCES);
+                assert!(!col.is_nan());
+                col
             })
             .sum();
 
@@ -84,11 +87,16 @@ fn main() {
 
 fn ray_colour(world: &Objects, ray: &Ray, depth: usize) -> Colour {
     if depth == 0 {
-        return Colour::BLUE;
+        return Colour::BLACK;
     }
     if let Some(hr) = world.hit(&ray, 0.001, INF) {
         if let Some((new_ray, attenuation)) = hr.material.scatter(ray, &hr) {
-            return attenuation * ray_colour(world, &new_ray, depth - 1);
+            let res = ray_colour(world, &new_ray, depth - 1);
+            let col = attenuation * res;
+            if col.is_nan() {
+                panic!("Got a col that is nan via atten. {:?} and col {:?}.", attenuation, res);
+            }
+            return col;
         } else {
             return Colour::from(0.0);
         }
@@ -96,5 +104,7 @@ fn ray_colour(world: &Objects, ray: &Ray, depth: usize) -> Colour {
 
     let unit = Vec3::normalize(&ray.direction);
     let t = 0.5 * (unit.y + 1.0);
-    Colour::col_lerp(Colour::WHITE, Colour::BLUE, t)
+    let col = Colour::col_lerp(Colour::WHITE, Colour::BLUE, t);
+    assert!(!col.is_nan());
+    col
 }

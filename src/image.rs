@@ -30,6 +30,7 @@ impl Image {
         print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
         for row in self.pixels {
             for col in row {
+                assert!(col.all_positive_or_zero());
                 col.print();
             }
         }

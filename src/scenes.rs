@@ -307,6 +307,7 @@ pub fn two_touching_objects() -> Objects {
     let mut objects: Objects = vec![];
 
     let r = (PI / 4.0).cos();
+    assert!(!r.is_nan());
     objects.push(
         Box::new(
             Sphere {

@@ -23,14 +23,15 @@ impl Aabb {
         // true
 
         let inv_d = ray.direction.map(|x| 1. / x);
+        assert!(inv_d.is_nan());
         let t0 = (self.min - ray.origin) * inv_d;
         let t1 = (self.max - ray.origin) * inv_d;
         let (t0, t1) = (
             inv_d.zip_with3(t0, t1, |i, a, b| if i < 0. { b } else { a }),
             inv_d.zip_with3(t0, t1, |i, a, b| if i < 0. { a } else { b }),
         );
-        let start = t_min.max(t0.reduce(f64::max));
-        let end = t_max.min(t1.reduce(f64::min));
+        let start = t_min.max(t0.fold(f64::max));
+        let end = t_max.min(t1.fold(f64::min));
         end > start
     }
 
