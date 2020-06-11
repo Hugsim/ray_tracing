@@ -27,8 +27,8 @@ pub fn texture_test(t_min: f64, t_max: f64) -> Objects {
         Box::new(
             Sphere {
                 centre: Pos3::new(0.0, 2.0, 0.0),
-                material: Material::Lambertian {
-                    albedo: texture.clone(),
+                material: Material::DiffuseLight {
+                    emit: texture.clone(),
                 },
                 radius: 2.0,
             }

@@ -50,6 +50,8 @@ fn main() {
         1.0,
     );
 
+    let background = Colour::BLACK;
+
     eprintln!("Starting to build BVH.");
 
     let objects = texture_test(0.0, 1.0);
@@ -63,7 +65,7 @@ fn main() {
                 let v = (y as f64 + random_zero_one()) / (IMAGE_HEIGHT as f64 - 1.0);
                 let ray = camera.get_ray(u, v);
                 assert!(!ray.direction.is_nan());
-                let col = ray_colour(&objects, &ray, MAX_BOUNCES);
+                let col = ray_colour(&objects, background, &ray, MAX_BOUNCES);
                 assert!(!col.is_nan());
                 col
             })
@@ -85,26 +87,20 @@ fn main() {
     eprintln!("Done!");
 }
 
-fn ray_colour(world: &Objects, ray: &Ray, depth: usize) -> Colour {
+fn ray_colour(world: &Objects, background_colour: Colour, ray: &Ray, depth: usize) -> Colour {
     if depth == 0 {
         return Colour::BLACK;
     }
     if let Some(hr) = world.hit(&ray, 0.001, INF) {
         if let Some((new_ray, attenuation)) = hr.material.scatter(ray, &hr) {
-            let res = ray_colour(world, &new_ray, depth - 1);
+            let res = ray_colour(world, background_colour, &new_ray, depth - 1);
             let col = attenuation * res;
-            if col.is_nan() {
-                panic!("Got a col that is nan via attenuation {:?} and ray_colour {:?}.", attenuation, res);
-            }
-            return col;
+            assert!(!col.is_nan());
+            col
         } else {
-            return Colour::from(0.0);
+            hr.material.emit(hr.u, hr.v, hr.p)
         }
-    } 
-
-    let unit = Vec3::normalize(&ray.direction);
-    let t = 0.5 * (unit.y + 1.0);
-    let col = Colour::col_lerp(Colour::WHITE, Colour::BLUE, t);
-    assert!(!col.is_nan() && col.all_positive_or_zero());
-    col
+    } else {
+        background_colour
+    }
 }

@@ -16,7 +16,10 @@ pub enum Material {
     },
     Dielectric {
         refractive_index: f64,
-    }
+    },
+    DiffuseLight {
+        emit: Texture,
+    },
 }
 
 impl Material {
@@ -55,6 +58,20 @@ impl Material {
 
                 Some((ray, Colour::from(1.0)))
             },
+            Material::DiffuseLight { .. } => {
+                None
+            },
+        }
+    }
+
+    pub fn emit(&self, u: f64, v: f64, p: Pos3) -> Colour {
+        match self {
+            Material::DiffuseLight { emit } => {
+                emit(u, v, p)
+            },
+            _ => {
+                Colour::BLACK
+            }
         }
     }
 }
