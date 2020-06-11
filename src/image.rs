@@ -10,13 +10,13 @@ pub struct Image {
 
 impl Image {
     pub fn new(width: usize, height: usize, f: impl Fn(usize, usize) -> Colour + Sync) -> Image {
-        let num_lines: AtomicUsize = AtomicUsize::new(0);
+        let num_lines: AtomicUsize = AtomicUsize::new(1);
         Image {
             pixels: (0..height)
                         .into_par_iter()
                         .rev()
                         .map(|y| {
-                                eprintln!("Starting scanline {} ({}/{})", y, num_lines.fetch_add(1, Ordering::Relaxed) + 1, IMAGE_HEIGHT);
+                                eprintln!("Starting scanline {} ({}/{})", y, num_lines.fetch_add(1, Ordering::Relaxed), IMAGE_HEIGHT);
                                 (0..width)
                                 .map(|x|
                                     f(x, y)

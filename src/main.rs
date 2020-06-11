@@ -94,7 +94,7 @@ fn ray_colour(world: &Objects, ray: &Ray, depth: usize) -> Colour {
             let res = ray_colour(world, &new_ray, depth - 1);
             let col = attenuation * res;
             if col.is_nan() {
-                panic!("Got a col that is nan via atten. {:?} and col {:?}.", attenuation, res);
+                panic!("Got a col that is nan via attenuation {:?} and ray_colour {:?}.", attenuation, res);
             }
             return col;
         } else {
@@ -105,6 +105,6 @@ fn ray_colour(world: &Objects, ray: &Ray, depth: usize) -> Colour {
     let unit = Vec3::normalize(&ray.direction);
     let t = 0.5 * (unit.y + 1.0);
     let col = Colour::col_lerp(Colour::WHITE, Colour::BLUE, t);
-    assert!(!col.is_nan());
+    assert!(!col.is_nan() && col.all_positive_or_zero());
     col
 }

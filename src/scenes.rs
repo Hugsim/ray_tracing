@@ -10,7 +10,7 @@ use crate::perlin::*;
 pub type Objects = Vec<Box<dyn Hit>>;
 
 pub fn perlin_test(t_min: f64, t_max: f64) -> Objects {
-    let perlin = noise(Perlin::new());
+    let perlin = noise(Perlin::new(), 4.0);
 
     vec![
         Box::new(

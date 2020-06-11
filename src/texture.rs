@@ -4,6 +4,8 @@ use crate::perlin::*;
 
 use std::sync::Arc;
 
+use ::image::RgbImage;
+
 pub type Texture = Arc<dyn Fn(f64, f64, Vec3) -> Colour + Send + Sync>;
 
 pub fn solid_colour(col: Colour) -> Texture {
@@ -26,10 +28,10 @@ pub fn checkered(t1: Texture, t2: Texture) -> Texture {
     )
 }
 
-pub fn noise(noise: Perlin) -> Texture {
+pub fn noise(noise: Perlin, scale: f64) -> Texture {
     Arc::new(
         move |_, _, p| {
-            Colour::from(1.0) * noise.noise(p)
+            Colour::from(1.0) * 0.5 * (1.0 + (scale * p.z + 5.0 * noise.turb(p * scale, 7)).sin())
         }
     )
 }

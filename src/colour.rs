@@ -37,11 +37,15 @@ impl Colour {
     }
 
     pub fn all_positive_or_zero(&self) -> bool {
-        !self.any_negative()
+        self.all(|c| c >= 0.0)
     }
 
     pub fn any(&self, mut f: impl FnMut(f64) -> bool) -> bool {
         f(self.r) || f(self.g) || f(self.b)
+    }
+
+    pub fn all(&self, mut f: impl FnMut(f64) -> bool) -> bool {
+        f(self.r) && f(self.g) && f(self.b)
     }
 
     pub fn print(&self) {
