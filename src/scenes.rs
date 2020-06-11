@@ -7,7 +7,34 @@ use crate::bvh::*;
 use crate::texture::*;
 use crate::perlin::*;
 
+use std::path::Path;
+
 pub type Objects = Vec<Box<dyn Hit>>;
+
+pub fn texture_test(t_min: f64, t_max: f64) -> Objects {
+    let texture = image(Path::new("assets/earthmap.jpg"));
+
+    vec![
+        Box::new(
+            Sphere {
+                centre: Pos3::new(0.0, -1000.0, 0.0),
+                material: Material::Lambertian {
+                    albedo: solid_colour(Colour::from(0.6)),
+                },
+                radius: 1000.0,
+            }
+        ),
+        Box::new(
+            Sphere {
+                centre: Pos3::new(0.0, 2.0, 0.0),
+                material: Material::Lambertian {
+                    albedo: texture.clone(),
+                },
+                radius: 2.0,
+            }
+        ),
+    ]
+}
 
 pub fn perlin_test(t_min: f64, t_max: f64) -> Objects {
     let perlin = noise(Perlin::new(), 4.0);

@@ -52,9 +52,9 @@ fn main() {
 
     eprintln!("Starting to build BVH.");
 
-    let objects = perlin_test(0.0, 1.0);
+    let objects = texture_test(0.0, 1.0);
 
-    eprintln!("Finished building BVH.");
+    eprintln!("Finished building BVH, starting actual ray tracing.");
 
     let buffer = Image::new(IMAGE_WIDTH, IMAGE_HEIGHT, |x, y| {
         let col: Colour = (0..SAMPLES_PER_PIXEL)
