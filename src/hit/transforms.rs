@@ -7,7 +7,7 @@ pub struct LinearMove<O: Hit> {
 }
 
 impl<O: Hit> LinearMove<O> {
-    pub fn new(vel: Vec3, obj: O) -> LinearMove<O> {
+    pub fn new(obj: O, vel: Vec3) -> LinearMove<O> {
         LinearMove {
             obj,
             vel,
@@ -78,3 +78,50 @@ impl<O: Hit> Hit for FlipNormals<O> {
         self.0.bounding_box(t0, t1)
     }
 }
+
+pub struct Translate<O: Hit> {
+    obj: O,
+    offset: Vec3,
+}
+
+impl <O: Hit> Translate<O> {
+    pub fn new(obj: O, offset: Vec3) -> Translate<O> {
+        Translate {
+            obj,
+            offset,
+        }
+    }
+}
+
+impl<O: Hit> Hit for Translate<O> {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        let new_ray = Ray {
+            origin: ray.origin - self.offset,
+            ..*ray
+        };
+
+        if let Some(hr) = self.obj.hit(&new_ray, t_min, t_max) {
+            let p = hr.p + self.offset;
+            let (normal, side) = HitRecord::face(&hr.normal, &new_ray);
+            Some(
+                HitRecord {
+                    p,
+                    normal,
+                    side,
+                    ..hr
+                }
+            )
+        } else {
+            None
+        }
+    }
+
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
+        self.obj.bounding_box(t0, t1).map(|bb| 
+            Aabb {
+                min: bb.min + self.offset,
+                max: bb.max + self.offset,
+            }
+        )
+    }
+} 
