@@ -1,7 +1,6 @@
 mod colour;
 mod vec3;
 mod ray;
-mod hit;
 mod utility;
 mod camera;
 mod material;
@@ -12,6 +11,7 @@ mod aabb;
 mod bvh;
 mod texture;
 mod perlin;
+mod hit;
 
 use colour::*;
 use vec3::*;
@@ -32,17 +32,18 @@ use ::image as ext_image;
 use std::path::Path;
 
 fn main() {
-    let look_from = Pos3::new(13.0, 2.0, 3.0);
-    let look_at = Pos3::new(0.0, 0.0, 0.0);
+    let look_from = Pos3::new(278.0, 278.0, -800.0);
+    let look_at = Pos3::new(278.0, 278.0, 0.0);
     let vup = Pos3::new(0.0, 1.0, 0.0);
     let dist_to_focus = 10.0;
     let aperture = 0.0;
+    let fov = 40.0;
 
     let camera = camera::new(
         look_from,
         look_at, 
         vup, 
-        20.0, 
+        fov,
         ASPECT_RATIO,
         aperture,
         dist_to_focus,
@@ -54,7 +55,7 @@ fn main() {
 
     eprintln!("Starting to build BVH.");
 
-    let objects = texture_test(0.0, 1.0);
+    let objects = cornell_box(0.0, 1.0);
 
     eprintln!("Finished building BVH, starting actual ray tracing.");
 
@@ -94,7 +95,8 @@ fn ray_colour(world: &Objects, background_colour: Colour, ray: &Ray, depth: usiz
     if let Some(hr) = world.hit(&ray, 0.001, INF) {
         if let Some((new_ray, attenuation)) = hr.material.scatter(ray, &hr) {
             let res = ray_colour(world, background_colour, &new_ray, depth - 1);
-            let col = attenuation * res;
+            let emitted = hr.material.emit(hr.u, hr.v, hr.p);
+            let col = emitted + attenuation * res;
             assert!(!col.is_nan());
             col
         } else {

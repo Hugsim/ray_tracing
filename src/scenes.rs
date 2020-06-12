@@ -1,4 +1,3 @@
-use crate::hit::*;
 use crate::material::*;
 use crate::vec3::*;
 use crate::colour::*;
@@ -6,10 +5,147 @@ use crate::utility::*;
 use crate::bvh::*;
 use crate::texture::*;
 use crate::perlin::*;
+use crate::hit::*;
 
 use std::path::Path;
 
 pub type Objects = Vec<Box<dyn Hit>>;
+
+pub fn cornell_box(t_min: f64, t_max: f64) -> Objects {
+    let red =   Material::Lambertian { 
+        albedo: solid_colour(Colour::new(0.65, 0.05, 0.05))
+    };
+    let white = Material::Lambertian { 
+        albedo: solid_colour(Colour::from(0.73))
+    };
+    let green = Material::Lambertian { 
+        albedo: solid_colour(Colour::new(0.12, 0.45, 0.15))
+    };
+    let light = Material::DiffuseLight {
+        emit: solid_colour(Colour::from(15.0))
+    };
+
+    vec![
+        Box::new(
+            FlipNormals (
+                YZRect::new(
+                    0.0,
+                    555.0,
+                    0.0,
+                    555.0,
+                    555.0,
+                    green.clone()
+                )
+            )
+        ),
+        Box::new(
+            YZRect::new(
+                0.0,
+                555.0,
+                0.0,
+                555.0,
+                0.0,
+                red.clone()
+            )
+        ),
+        Box::new(
+            XZRect::new(
+                213.0,
+                343.0,
+                227.0,
+                332.0,
+                554.0,
+                light.clone()
+            )
+        ),
+        Box::new(
+            FlipNormals (
+                XZRect::new(
+                    0.0,
+                    555.0,
+                    0.0,
+                    555.0,
+                    0.0,
+                    white.clone()
+                )
+            )
+        ),
+        Box::new(
+            XZRect::new(
+                0.0,
+                555.0,
+                0.0,
+                555.0,
+                555.0,
+                white.clone()
+            )
+        ),
+        Box::new(
+            FlipNormals (
+                XYRect::new(
+                    0.0,
+                    555.0,
+                    0.0,
+                    555.0,
+                    555.0,
+                    white.clone()
+                )
+            )
+        ),
+
+        Box::new(
+            Cuboid::new(
+                Pos3::new(130.0, 0.0, 65.0),
+                Pos3::new(295.0, 165.0, 230.0),
+                white.clone()
+            )
+        ),
+        Box::new(
+            Cuboid::new(
+                Pos3::new(265.0, 0.0, 295.0),
+                Pos3::new(430.0, 330.0, 460.0),
+                white.clone()
+            )
+        ),
+    ]
+}
+
+pub fn rectangle_light_test(t_min: f64, t_max: f64) -> Objects {
+    let perlin = noise(Perlin::new(), 4.0);
+
+    vec![
+        Box::new(
+            Sphere {
+                centre: Pos3::new(0.0, -1000.0, 0.0),
+                material: Material::Lambertian {
+                    albedo: perlin.clone(),
+                },
+                radius: 1000.0,
+            }
+        ),
+        Box::new(
+            Sphere {
+                centre: Pos3::new(0.0, 2.0, 0.0),
+                material: Material::Lambertian {
+                    albedo: perlin.clone(),
+                },
+                radius: 2.0,
+            }
+        ),
+        Box::new(
+            XYRect {
+                x0: 3.0,
+                x1: 5.0,
+                y0: 1.0,
+                y1: 3.0,
+                z: -2.0,
+                material: Material::DiffuseLight {
+                    emit: solid_colour(Colour::from(4.0))
+                },
+            }
+        )
+    ]
+}
 
 pub fn texture_test(t_min: f64, t_max: f64) -> Objects {
     let texture = image(Path::new("assets/earthmap.jpg"));

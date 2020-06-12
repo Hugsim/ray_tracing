@@ -45,13 +45,13 @@ pub fn image(image: &Path) -> Texture {
 
         if let DynamicImage::ImageRgb8(image) = image {
             Arc::new(
-                move |u, v, p| {
+                move |u, v, _| {
                     let (width, height) = &image.dimensions();
                     let width = *width;
                     let height = *height;
 
                     let u = clamp(0.0, 1.0, u);
-                    let v = clamp(0.0, 1.0, v);
+                    let v = 1.0 - clamp(0.0, 1.0, v);
 
                     let mut x = (u * width as f64).floor() as u32;
                     let mut y = (v * height as f64).floor() as u32;
