@@ -22,7 +22,9 @@ impl XYRect {
     }
 }
 
+
 impl Hit for XYRect {
+    #[allow(clippy::many_single_char_names)]
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let t = (self.z - ray.origin.z) / (ray.direction.z);
         if t < t_min || t > t_max {
@@ -55,7 +57,7 @@ impl Hit for XYRect {
         }
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<Aabb> {
         Some(
             Aabb::new(
                 Pos3::new(self.x0, self.y0, self.z - 0.001), 
@@ -116,7 +118,7 @@ impl Hit for XZRect {
         }
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<Aabb> {
         Some(
             Aabb::new(
                 Pos3::new(self.x0, self.y - 0.001, self.z0), 
@@ -177,7 +179,7 @@ impl Hit for YZRect {
         }
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<Aabb> {
         Some(
             Aabb::new(
                 Pos3::new(self.x - 0.001, self.y0, self.z0), 

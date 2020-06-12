@@ -1,3 +1,6 @@
+#![allow(clippy::redundant_clone)]
+#![allow(unused_variables)]
+
 use crate::material::*;
 use crate::vec3::*;
 use crate::colour::*;
@@ -327,7 +330,7 @@ pub fn test_bvh(t_min: f64, t_max: f64) -> Objects {
                                     centre,
                                     radius: 0.2,
                                     material: Material::Lambertian {
-                                        albedo: albedo,
+                                        albedo,
                                     },
                                 }
                             )
@@ -341,7 +344,7 @@ pub fn test_bvh(t_min: f64, t_max: f64) -> Objects {
                                     centre,
                                     radius: 0.2,
                                     material: Material::Metal {
-                                        albedo: albedo,
+                                        albedo,
                                         fuzziness,
                                     },
                                 }

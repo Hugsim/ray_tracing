@@ -32,6 +32,7 @@ impl Camera {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn new(
         look_from: Pos3, 
         look_at: Pos3, 

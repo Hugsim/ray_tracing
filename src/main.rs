@@ -13,20 +13,20 @@ mod texture;
 mod perlin;
 mod hit;
 
-use colour::*;
-use vec3::*;
-use ray::*;
-use hit::*;
-use utility::*;
-use camera::*;
-use material::*;
-use crate::image::*;
-use scenes::*;
-use consts::*;
-use aabb::*;
-use bvh::*;
-use texture::*;
-use perlin::*;
+pub use colour::*;
+pub use vec3::*;
+pub use ray::*;
+pub use hit::*;
+pub use utility::*;
+pub use camera::*;
+pub use material::*;
+pub use crate::image::*;
+pub use scenes::*;
+pub use consts::*;
+pub use aabb::*;
+pub use bvh::*;
+pub use texture::*;
+pub use perlin::*;
 
 use ::image as ext_image;
 use std::path::Path;
@@ -88,6 +88,7 @@ fn main() {
     eprintln!("Done!");
 }
 
+#[allow(clippy::ptr_arg)]
 fn ray_colour(world: &Objects, background_colour: Colour, ray: &Ray, depth: usize) -> Colour {
     if depth == 0 {
         return Colour::BLACK;

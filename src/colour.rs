@@ -115,6 +115,7 @@ impl Colour {
     };
 }
 
+#[allow(dead_code)]
 pub fn rand_colour() -> Colour {    
     Colour::new(random_zero_one(), random_zero_one(), random_zero_one())
 }

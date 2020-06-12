@@ -3,6 +3,7 @@ use crate::hit::*;
 use crate::ray::*;
 use crate::scenes::*;
 
+#[allow(dead_code)]
 pub enum BvhContents {
     Leaf(Box<dyn Hit>),
     Node {
@@ -11,6 +12,7 @@ pub enum BvhContents {
     }
 }
 
+#[allow(dead_code)]
 pub struct Bvh {
     size: usize,
     bb: Aabb,
@@ -18,6 +20,7 @@ pub struct Bvh {
 }
 
 impl Bvh {
+    #[allow(dead_code)]
     pub fn new(mut world: Objects, t_min: f64, t_max: f64) -> Bvh {
         fn range_on_axis(world: &[Box<dyn Hit>], t_min: f64, t_max: f64, axis: usize) -> f64 {
             assert!(axis <= 2);
@@ -130,7 +133,7 @@ impl Hit for Bvh {
         }
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<Aabb> {
         Some(self.bb)
     }
 }

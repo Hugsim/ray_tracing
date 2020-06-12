@@ -12,11 +12,12 @@ pub struct Perlin {
 }
 
 impl Perlin {
+    #[allow(dead_code)]
     pub fn new() -> Perlin {
         let mut rng = thread_rng();
 
         let mut rand_vecs: Vec<Vec3> = Vec::with_capacity(PERLIN_POINT_COUNT);
-        for i in 0..PERLIN_POINT_COUNT {
+        for _ in 0..PERLIN_POINT_COUNT {
             rand_vecs.push(Vec3::normalize(&random_vec_in_unit_sphere()));
         }
 
@@ -50,6 +51,7 @@ impl Perlin {
 
         let mut c: [[[Vec3; 2]; 2]; 2] = [[[Vec3::from(0.0); 2]; 2]; 2];
 
+        #[allow(clippy::needless_range_loop)]
         for x in 0..2 {
             for y in 0..2 {
                 for z in 0..2 {
@@ -81,6 +83,7 @@ impl Perlin {
         accum.abs()
     }
 
+    #[allow(clippy::needless_range_loop)]
     fn trilinear_interp(c: [[[Vec3; 2]; 2]; 2], uvw: Vec3) -> f64 {
         let uvw_2 = uvw.map(|c| c * c * (3.0 - 2.0 * c));
         let mut accum = 0.0;
@@ -106,5 +109,11 @@ impl Perlin {
             }
         }
         accum
+    }
+}
+
+impl Default for Perlin {
+    fn default() -> Perlin { 
+        Perlin::new()
     }
 }

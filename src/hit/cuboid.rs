@@ -87,7 +87,7 @@ impl Cuboid {
                         c0.z,
                         c1.z,
                         c0.x,
-                        material.clone(),
+                        material,
                     )
                 )
             )
@@ -106,7 +106,7 @@ impl Hit for Cuboid {
         self.sides.hit(ray, t_min, t_max)
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<Aabb> {
         Some(
             Aabb::new(
                 self.c0,

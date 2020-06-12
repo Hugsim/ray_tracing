@@ -7,6 +7,7 @@ pub struct LinearMove<O: Hit> {
 }
 
 impl<O: Hit> LinearMove<O> {
+    #[allow(dead_code)]
     pub fn new(obj: O, vel: Vec3) -> LinearMove<O> {
         LinearMove {
             obj,
@@ -53,6 +54,7 @@ impl<O: Hit> Hit for LinearMove<O> {
 pub struct FlipNormals<O: Hit>(pub O);
 
 impl<O: Hit> FlipNormals<O> {
+    #[allow(dead_code)]
     pub fn new(obj: O) -> FlipNormals<O> {
         FlipNormals(obj)
     }
@@ -85,6 +87,7 @@ pub struct Translate<O: Hit> {
 }
 
 impl <O: Hit> Translate<O> {
+    #[allow(dead_code)]
     pub fn new(obj: O, offset: Vec3) -> Translate<O> {
         Translate {
             obj,

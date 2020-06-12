@@ -8,6 +8,7 @@ pub struct Sphere {
 }
 
 impl Sphere {
+    #[allow(dead_code)]
     pub fn new(centre: Pos3, radius: f64, material: Material) -> Sphere {
         Sphere { centre, radius, material }
     }
@@ -28,6 +29,7 @@ impl Sphere {
 }
 
 impl Hit for Sphere {
+    #[allow(clippy::many_single_char_names)]
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = ray.origin - self.centre;
         let a = ray.direction.length_squared();
@@ -94,7 +96,7 @@ impl Hit for Sphere {
         None
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
+    fn bounding_box(&self, _t0: f64, _t1: f64) -> Option<Aabb> {
         Some(
             Aabb::new(
                 self.centre - Vec3::from(self.radius),
