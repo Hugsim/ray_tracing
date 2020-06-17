@@ -28,9 +28,6 @@ pub use bvh::*;
 pub use texture::*;
 pub use perlin::*;
 
-use ::image as ext_image;
-use std::path::Path;
-
 fn main() {
     let background = Colour::BLACK;
 
@@ -56,15 +53,15 @@ fn main() {
         col / SAMPLES_PER_PIXEL as f64
     });
 
-    eprintln!("Raytracing done, saving PPM to disk.");
+    eprintln!("Raytracing done, saving PNG to disk.");
 
-    buffer.print();
+    buffer.save();
 
-    eprintln!("PPM saved, converting to PNG.");
+    // eprintln!("PPM saved, converting to PNG.");
 
-    let img = ext_image::open(Path::new("./out/image.ppm")).expect("Failed reading PPM-file.");
+    // let img = ext_image::open(Path::new("./out/image.ppm")).expect("Failed reading PPM-file.");
 
-    img.save(Path::new("./out/image.png")).expect("Failed writing PNG.");
+    // img.save(Path::new("./out/image.png")).expect("Failed writing PNG.");
 
     eprintln!("Done!");
 }

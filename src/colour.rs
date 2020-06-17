@@ -66,6 +66,15 @@ impl Colour {
         (1.0 - t) * c1 + t * c2
     }
 
+    pub fn as_int_array(self) -> [u8; 3] {
+        let col = self.map(|c| c.sqrt());
+        let col = col.map(|c| 
+            (256.0 * clamp(0.0, 0.999, c)).floor()
+        );
+
+        [col.r as u8, col.g as u8, col.b as u8]
+    }
+
     pub const RED: Colour = Colour {
         r: 1.0,
         g: 0.0,

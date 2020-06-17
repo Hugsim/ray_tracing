@@ -71,12 +71,7 @@ impl Hit for Sphere {
                 
 
                 let (_, side) = HitRecord::face(&normal, &ray);
-                // let side = 
-                //     if Vec3::dot(&ray.direction, &normal) < 0.0 {
-                //         Side::Outside
-                //     } else {
-                //         Side::Inside
-                //     };
+
                 let material = &self.material;
 
                 let (u, v) = Sphere::uv(Vec3::normalize(&(p - self.centre)));
