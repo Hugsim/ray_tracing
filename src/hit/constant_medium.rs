@@ -2,15 +2,15 @@ use super::*;
 
 pub struct ConstantMedium<O: Hit> {
     boundary: O,
-    phase_function: Material,
+    material: Material,
     neg_inv_density: f64,
 }
 
 impl<O: Hit> ConstantMedium<O> {
-    pub fn new(boundary: O, density: f64, phase_function: Material) -> ConstantMedium<O> {
+    pub fn new(boundary: O, density: f64, material: Material) -> ConstantMedium<O> {
         ConstantMedium {
             boundary,
-            phase_function,
+            material,
             neg_inv_density: -(1.0 / density),
         }
     }
@@ -55,7 +55,7 @@ impl<O: Hit> Hit for ConstantMedium<O> {
 
                         let normal = Vec3::new(1.0, 0.0, 0.0);
                         let side = Side::Outside;
-                        let material = &self.phase_function;
+                        let material = &self.material;
 
                         Some(
                             HitRecord {

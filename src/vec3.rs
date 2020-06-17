@@ -166,6 +166,14 @@ pub fn random_vec_in_unit_sphere() -> Vec3 {
     }
 }
 
+pub fn random_vec_in_range(min: f64, max: f64) -> Vec3 {
+    Vec3::new(
+        random_in_range(min, max),
+        random_in_range(min, max),
+        random_in_range(min, max),
+    )
+}
+
 pub fn random_vec_in_unit_disk() -> Vec3 {
     loop {
         let v = Vec3::new(random_zero_one(), random_zero_one(), 0.0);

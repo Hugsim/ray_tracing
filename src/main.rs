@@ -32,30 +32,11 @@ use ::image as ext_image;
 use std::path::Path;
 
 fn main() {
-    let look_from = Pos3::new(278.0, 278.0, -800.0);
-    let look_at = Pos3::new(278.0, 278.0, 0.0);
-    let vup = Pos3::new(0.0, 1.0, 0.0);
-    let dist_to_focus = 10.0;
-    let aperture = 0.0;
-    let fov = 40.0;
-
-    let camera = camera::new(
-        look_from,
-        look_at, 
-        vup, 
-        fov,
-        ASPECT_RATIO,
-        aperture,
-        dist_to_focus,
-        0.0,
-        1.0,
-    );
-
     let background = Colour::BLACK;
 
     eprintln!("Starting to build BVH.");
 
-    let objects = cornell_box_smoke(0.0, 1.0);
+    let (camera, objects) = final_scene_2(0.0, 1.0);
 
     eprintln!("Finished building BVH, starting actual ray tracing.");
 
