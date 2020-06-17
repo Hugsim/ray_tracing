@@ -23,7 +23,7 @@ impl Bvh {
     #[allow(dead_code)]
     pub fn new(mut world: Objects, t_min: f64, t_max: f64) -> Bvh {
         fn range_on_axis(world: &[Box<dyn Hit>], t_min: f64, t_max: f64, axis: usize) -> f64 {
-            assert!(axis <= 2);
+            debug_assert!(axis <= 2);
 
             let (min, max) = world.iter().fold((std::f64::MIN, std::f64::MAX), |range, obj| {
                 if let Some(bb) = obj.bounding_box(t_min, t_max) {

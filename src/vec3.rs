@@ -79,7 +79,7 @@ impl Vec3 {
 
     pub fn normalize(v: &Vec3) -> Vec3 {
         let v = *v / v.length();
-        assert!(!v.is_nan());
+        debug_assert!(!v.is_nan());
         v
     }
 

@@ -31,7 +31,7 @@ impl Camera {
     ) -> Camera {
         let theta = deg_to_rad(vert_fov_deg);
         let h = (theta / 2.0).tan();
-        assert!(!h.is_nan());
+        debug_assert!(!h.is_nan());
         let viewport_height = 2.0 * h;
         let viewport_width = aspect_ratio * viewport_height;
 

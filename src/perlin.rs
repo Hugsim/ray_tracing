@@ -60,7 +60,7 @@ impl Perlin {
                         self.perm_y[(ijk.y as usize + y) & 255] as usize ^
                         self.perm_z[(ijk.z as usize + z) & 255] as usize 
                     ];
-                    assert!(!c[x][y][z].is_nan());
+                    debug_assert!(!c[x][y][z].is_nan());
                 }
             }
         }
@@ -102,7 +102,7 @@ impl Perlin {
                     // let trd = Vec3::from(1.0) - uvw;
                     // let val = fst * snd * trd;
                     // let acc = val.fold(std::ops::Mul::mul);
-                    // assert!(acc >= 0.0);
+                    // debug_assert!(acc >= 0.0);
                     // accum += acc * c[i][j][k];
                     accum += val;
                 }

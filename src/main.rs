@@ -43,9 +43,9 @@ fn main() {
                 let u = (x as f64 + random_zero_one()) / (IMAGE_WIDTH as f64 - 1.0);
                 let v = (y as f64 + random_zero_one()) / (IMAGE_HEIGHT as f64 - 1.0);
                 let ray = camera.get_ray(u, v);
-                assert!(!ray.direction.is_nan());
+                debug_assert!(!ray.direction.is_nan());
                 let col = ray_colour(&objects, background, &ray, MAX_BOUNCES);
-                assert!(!col.is_nan());
+                debug_assert!(!col.is_nan());
                 col
             })
             .sum();
@@ -76,7 +76,7 @@ fn ray_colour(world: &Objects, background_colour: Colour, ray: &Ray, depth: usiz
             let res = ray_colour(world, background_colour, &new_ray, depth - 1);
             let emitted = hr.material.emit(hr.u, hr.v, hr.p);
             let col = emitted + attenuation * res;
-            assert!(!col.is_nan());
+            debug_assert!(!col.is_nan());
             col
         } else {
             hr.material.emit(hr.u, hr.v, hr.p)

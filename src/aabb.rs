@@ -23,7 +23,7 @@ impl Aabb {
         // true
 
         let inv_d = ray.direction.map(|x| 1.0 / x);
-        assert!(!inv_d.is_nan(), "ray: {:?}, inv_d: {:?}", ray, inv_d);
+        debug_assert!(!inv_d.is_nan(), "ray: {:?}, inv_d: {:?}", ray, inv_d);
         let t0 = (self.min - ray.origin) * inv_d;
         let t1 = (self.max - ray.origin) * inv_d;
         let (t0, t1) = (

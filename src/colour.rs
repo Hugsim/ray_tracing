@@ -13,7 +13,7 @@ impl Colour {
     pub fn as_string(&self) -> String {
         if self.r.is_nan() || self.g.is_nan() || self.b.is_nan() {
             eprintln!("Got a NaN when printing colour, replacing with magenta.");
-            assert!(!self.is_nan());
+            debug_assert!(!self.is_nan());
             format!("{} {} {}", 255, 0, 255)
         } else {
             format!("{} {} {}", self.r, self.g, self.b)
@@ -61,7 +61,7 @@ impl Colour {
     }
 
     pub fn col_lerp(c1: Colour, c2: Colour, t: f64) -> Colour {
-        assert!(0.0 <= t && t <= 1.0);
+        debug_assert!(0.0 <= t && t <= 1.0);
     
         (1.0 - t) * c1 + t * c2
     }

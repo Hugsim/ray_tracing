@@ -16,13 +16,13 @@ impl Sphere {
     pub fn uv(p: Pos3) -> (f64, f64) {
         let phi = p.z.atan2(p.x);
         let theta = p.y.asin();
-        assert!(!phi.is_nan());
-        assert!(!theta.is_nan());
+        debug_assert!(!phi.is_nan());
+        debug_assert!(!theta.is_nan());
 
         let u = 1.0 - (phi + PI)  / (2.0 * PI);
         let v = (theta + PI / 2.0) / PI;
 
-        assert!(!u.is_nan() && !v.is_nan());
+        debug_assert!(!u.is_nan() && !v.is_nan());
 
         (u, v)
     }
@@ -41,11 +41,11 @@ impl Hit for Sphere {
         if discriminant > 0.0 {
             let root = discriminant.sqrt();
             let t = (-half_b - root) / a;
-            assert!(!t.is_nan());
+            debug_assert!(!t.is_nan());
             if (t_min < t) && (t < t_max) {
                 let p = ray.at(t);
                 let normal = Vec3::normalize(&(p - self.centre));
-                assert!(!normal.is_nan());
+                debug_assert!(!normal.is_nan());
                 let (normal, side) = HitRecord::face(&normal, ray);
                 let material = &self.material;
 
@@ -64,7 +64,7 @@ impl Hit for Sphere {
                 );
             } 
             let t = (-half_b + root) / a;
-            assert!(!t.is_nan());
+            debug_assert!(!t.is_nan());
             if (t_min < t) && (t < t_max) {
                 let p = ray.at(t);
                 let normal = Vec3::normalize(&(p - self.centre));

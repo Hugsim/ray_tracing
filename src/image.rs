@@ -32,7 +32,7 @@ impl Image {
         print!("P3\n{} {}\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
         for row in self.pixels {
             for col in row {
-                assert!(col.all_positive_or_zero());
+                debug_assert!(col.all_positive_or_zero());
                 col.print();
             }
         }
@@ -45,7 +45,7 @@ impl Image {
 
         for (y, row) in self.pixels.iter().enumerate() {
             for (x, col) in row.iter().enumerate() {
-                assert!(col.all_positive_or_zero());
+                debug_assert!(col.all_positive_or_zero());
                 img.put_pixel(x as u32, y as u32, *image::Pixel::from_slice(&col.as_int_array()))
             }
         }
