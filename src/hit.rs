@@ -11,11 +11,13 @@ pub mod cuboid;
 pub mod rect;
 pub mod sphere;
 pub mod transforms;
+pub mod constant_medium;
 
 pub use cuboid::*;
 pub use rect::*;
 pub use sphere::*;
 pub use transforms::*;
+pub use constant_medium::*;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Side {

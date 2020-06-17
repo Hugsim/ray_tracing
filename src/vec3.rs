@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Neg, Sub, SubAssign, Mul, MulAssign, Div, DivAssign, Index};
+use std::ops::{Add, AddAssign, Neg, Sub, SubAssign, Mul, MulAssign, Div, DivAssign, Index, IndexMut};
 use rand::{thread_rng, Rng};
 use crate::utility::*;
 
@@ -18,6 +18,18 @@ impl Vec3 {
             y: f(self.y),
             z: f(self.z),
         }
+    }
+
+    pub fn zip_with(
+        self,
+        other: Vec3,
+        mut f: impl FnMut(f64, f64) -> f64,
+    ) -> Self {
+        Vec3::new(
+            f(self.x, other.x),
+            f(self.y, other.y),
+            f(self.z, other.z),
+        )
     }
 
     pub fn zip_with3(
@@ -111,6 +123,17 @@ impl Index<usize> for Vec3 {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
+            _ => panic!("Indexing into Vec3 out of bounds.")
+        }
+    }
+}
+
+impl IndexMut<usize> for Vec3 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.x,
+            1 => &mut self.y,
+            2 => &mut self.z,
             _ => panic!("Indexing into Vec3 out of bounds.")
         }
     }

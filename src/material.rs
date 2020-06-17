@@ -20,6 +20,9 @@ pub enum Material {
     DiffuseLight {
         emit: Texture,
     },
+    Isotropic {
+        albedo: Texture,
+    },
 }
 
 impl Material {
@@ -60,6 +63,16 @@ impl Material {
             },
             Material::DiffuseLight { .. } => {
                 None
+            },
+            Material::Isotropic { albedo } => {
+                let ray = Ray::new(
+                    hr.p, 
+                    random_vec_in_unit_sphere(),
+                    ray.time
+                );
+                let colour = albedo(hr.u, hr.v, hr.p);
+                
+                Some((ray, colour))
             },
         }
     }

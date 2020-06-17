@@ -65,7 +65,6 @@ impl<O: Hit> Hit for FlipNormals<O> {
         if let Some(hr) = self.0.hit(ray, t_min, t_max) {
             Some(
                 HitRecord {
-                    //normal: -hr.normal,
                     side: !hr.side,
                     ..hr
                 }
@@ -87,7 +86,6 @@ pub struct Translate<O: Hit> {
 }
 
 impl <O: Hit> Translate<O> {
-    #[allow(dead_code)]
     pub fn new(obj: O, offset: Vec3) -> Translate<O> {
         Translate {
             obj,
@@ -128,3 +126,86 @@ impl<O: Hit> Hit for Translate<O> {
         )
     }
 } 
+
+pub struct RotateY<O: Hit> {
+    pub obj: O,
+    sin_theta: f64,
+    cos_theta: f64,
+}
+
+impl<O: Hit> RotateY<O> {
+    pub fn new(obj: O, deg: f64) -> RotateY<O> {
+        let rads = deg_to_rad(deg);
+        let sin_theta = rads.sin();
+        let cos_theta = rads.cos();
+
+        RotateY {
+            obj,
+            sin_theta,
+            cos_theta,
+        }
+    }
+}
+
+impl<O: Hit> Hit for RotateY<O> {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        fn rot(p: Pos3, sin_theta: f64, cos_theta: f64) -> Pos3 {   
+            Vec3::new(
+                Vec3::dot(&p, &Vec3::new(cos_theta, 0.0, sin_theta)),
+                Vec3::dot(&p, &Vec3::new(0.0, 1.0, 0.0)),
+                Vec3::dot(&p, &Vec3::new(-sin_theta, 0.0, cos_theta)),
+            )
+        }
+
+        let new_ray = Ray {
+            origin: rot(ray.origin, -self.sin_theta, self.cos_theta),
+            direction: rot(ray.direction, -self.sin_theta, self.cos_theta),
+            ..*ray
+        };
+
+        self.obj.hit(&new_ray, t_min, t_max).map(|hr|
+            HitRecord {
+                p: rot(hr.p, self.sin_theta, self.cos_theta),
+                normal: rot(hr.normal, self.sin_theta, self.cos_theta),
+                ..hr
+            }
+        )
+    }
+
+    fn bounding_box(&self, t0: f64, t1: f64) -> Option<Aabb> {
+        fn rot(p: Pos3, sin_theta: f64, cos_theta: f64) -> Pos3 {   
+            Vec3::new(
+                Vec3::dot(&p, &Vec3::new(cos_theta, 0.0, sin_theta)),
+                Vec3::dot(&p, &Vec3::new(0.0, 1.0, 0.0)),
+                Vec3::dot(&p, &Vec3::new(-sin_theta, 0.0, cos_theta)),
+            )
+        }
+
+        self.obj.bounding_box(t0, t1).map(|bb| {
+            let mut min = Vec3::from(std::f64::INFINITY);
+            let mut max = Vec3::from(std::f64::NEG_INFINITY);
+
+            for x in 0..3 {
+                for y in 0..3 {
+                    for z in 0..3 {
+                        let xyz = Vec3::new(x as f64, y as f64, z as f64);
+
+                        let xyz = xyz * bb.min + xyz.map(|c| 1.0 - c) * bb.min;
+
+                        let tester = rot(xyz, self.cos_theta, self.sin_theta);
+
+                        for c in 0..3 {
+                            min[c] = min[c].min(tester[c]);
+                            max[c] = max[c].max(tester[c]);
+                        }
+                    }
+                }
+            }
+
+            Aabb {
+                min,
+                max,
+            }
+        })
+    }
+}

@@ -55,7 +55,7 @@ fn main() {
 
     eprintln!("Starting to build BVH.");
 
-    let objects = cornell_box(0.0, 1.0);
+    let objects = cornell_box_smoke(0.0, 1.0);
 
     eprintln!("Finished building BVH, starting actual ray tracing.");
 
